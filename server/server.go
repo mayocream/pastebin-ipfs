@@ -24,7 +24,9 @@ type App struct {
 
 // Start start http server
 func Start(conf App) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 5 << 20,
+	})
 
 	// register middlewares
 	app.Use(recover.New())

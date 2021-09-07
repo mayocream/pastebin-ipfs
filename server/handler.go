@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"log"
 	"net/http"
 
@@ -11,20 +12,22 @@ import (
 var ipfsClient *ipfs.Client
 
 func handleAdd(c *fiber.Ctx) error {
-	// c.Request().Header.ContentLength()
-	// TODO max size limit
+	// TODO support multipart-form
 	file := c.Body()
 	if len(file) == 0 {
 		return fiber.ErrBadRequest
 	}
 
-	cid, err := ipfsClient.Add(file)
+	cid, err := ipfsClient.Add(&ipfs.File{
+		Reader: bytes.NewReader(file),
+		Name:   "plain.txt",
+	})
 	if err != nil {
 		log.Println("add file err: ", err)
 		return fiber.ErrInternalServerError
 	}
 
-	c.Status(http.StatusCreated).SendString(cid)
+	c.Status(http.StatusCreated).SendString(*cid)
 	return nil
 }
 
