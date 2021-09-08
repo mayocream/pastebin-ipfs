@@ -14,8 +14,6 @@ import (
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
 
-var ipfsClient *ipfs.Client
-
 // UploadResp ...
 type UploadResp struct {
 	Cid string `json:"cid"`
@@ -33,7 +31,7 @@ func (m *Metadata) String() string {
 	return string(b)
 }
 
-func handleUpload(c *fiber.Ctx) error {
+func (s *Server) handleUpload(c *fiber.Ctx) error {
 	blobs := make([]*ipfs.File, 0)
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -68,9 +66,15 @@ func handleUpload(c *fiber.Ctx) error {
 		Reader: strings.NewReader(meta.String()),
 	})
 
-	res, err := ipfsClient.Add(blobs...)
+	res, err := s.ipc.Add(blobs...)
 	if err != nil {
-		return fiber.ErrInternalServerError
+		return err
+	}
+
+	for _, obj := range res.Objects {
+		if err := s.idx.SetExist(obj.Hash); err != nil {
+			return err
+		}
 	}
 
 	return c.Status(http.StatusCreated).JSON(res)
@@ -78,7 +82,7 @@ func handleUpload(c *fiber.Ctx) error {
 
 // curl -T <file> <url>/filename
 // curl -T <file> <url>/
-func handlePut(c *fiber.Ctx) error {
+func (s *Server) handlePut(c *fiber.Ctx) error {
 	fn := c.Params("name")
 	if len(fn) == 0 {
 		return fiber.ErrBadRequest
@@ -89,12 +93,18 @@ func handlePut(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	res, err := ipfsClient.Add(&ipfs.File{
+	res, err := s.ipc.Add(&ipfs.File{
 		Name:   fn,
 		Reader: bytes.NewReader(body),
 	})
 	if err != nil {
 		return err
+	}
+
+	for _, obj := range res.Objects {
+		if err := s.idx.SetExist(obj.Hash); err != nil {
+			return err
+		}
 	}
 
 	ph := fmt.Sprintf("%s/%s/%s", c.Hostname(), res.Cid, fn)
@@ -102,7 +112,7 @@ func handlePut(c *fiber.Ctx) error {
 	return nil
 }
 
-func handleText(c *fiber.Ctx) error {
+func (s *Server) handleText(c *fiber.Ctx) error {
 	fn := c.Params("name", "plain.txt")
 
 	body := c.Body()
@@ -110,7 +120,7 @@ func handleText(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	res, err := ipfsClient.Add(&ipfs.File{
+	res, err := s.ipc.Add(&ipfs.File{
 		Name:   fn,
 		Reader: bytes.NewReader(body),
 	})
@@ -118,18 +128,33 @@ func handleText(c *fiber.Ctx) error {
 		return err
 	}
 
+	for _, obj := range res.Objects {
+		if err := s.idx.SetExist(obj.Hash); err != nil {
+			return err
+		}
+	}
+
 	ph := fmt.Sprintf("%s/%s", res.Cid, fn)
 	c.Status(http.StatusCreated).SendString(ph)
 	return nil
 }
 
-func handleCat(c *fiber.Ctx) error {
+func (s *Server) handleCat(c *fiber.Ctx) error {
 	cid := c.Params("cid")
 	if len(cid) == 0 {
 		return fiber.ErrBadRequest
 	}
 
-	src, err := ipfsClient.CatStream(cid)
+	ok, err := s.idx.Exist(cid)
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return fiber.ErrBadRequest
+	}
+
+	src, err := s.ipc.CatStream(cid)
 	if err != nil {
 		log.Println("cat cid err: ", err)
 		return fiber.ErrInternalServerError

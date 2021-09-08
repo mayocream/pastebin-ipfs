@@ -24,26 +24,25 @@ func main() {
 	initLogger()
 
 	var err error
-	app := server.App{
-		Addr: *addr,
-	}
+	conf := &server.Config{}
 
 	idx, err := index.NewIndex(*cacheStorePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	app.Index = idx
+	conf.Index = idx
 
-	app.IPFSClient, err = ipfs.NewClient(*ipfsAddr)
+	conf.IPFSClient, err = ipfs.NewClient(*ipfsAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if app.IPFSClient.Ping() != nil {
+	if conf.IPFSClient.Ping() != nil {
 		log.Panic("ipfs unavailble")
 	}
 
-	server.Start(app)
+	srv := server.New(conf)
+	srv.Start(*addr)
 }
 
 func initLogger() {

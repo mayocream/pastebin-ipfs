@@ -101,7 +101,6 @@ func (c *Client) Cat(cid string) ([]byte, error) {
 		return nil, err
 	}
 
-	// TODO max read size
 	buf := new(bytes.Buffer)
 	_, err = io.Copy(buf, src)
 	if err != nil {

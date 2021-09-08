@@ -18,15 +18,27 @@ import (
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
 
-// App config
-type App struct {
-	Addr       string
+// Config ...
+type Config struct {
 	IPFSClient *ipfs.Client
 	Index      *index.Index
 }
 
+// Server server
+type Server struct {
+	ipc *ipfs.Client
+	idx *index.Index
+}
+
+func New(conf *Config) *Server {
+	return &Server{
+		ipc: conf.IPFSClient,
+		idx: conf.Index,
+	}
+}
+
 // Start start http server
-func Start(conf App) {
+func (s *Server) Start(addr string) {
 	app := fiber.New(fiber.Config{
 		BodyLimit: 100 << 20,
 	})
@@ -44,16 +56,15 @@ func Start(conf App) {
 		Max: 20,
 	}))
 
-	ipfsClient = conf.IPFSClient
-	registerRoutes(app)
+	s.registerRoutes(app)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer cancel()
 
 	go gracefulShutdown(ctx, app)
 
-	log.Println("server listen: ", conf.Addr)
-	if err := app.Listen(conf.Addr); err != nil {
+	log.Println("server listen at ", addr)
+	if err := app.Listen(addr); err != nil {
 		log.Fatal(err)
 	}
 
@@ -66,13 +77,14 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 	app.Shutdown()
 }
 
-func registerRoutes(app *fiber.App) {
+func (s *Server) registerRoutes(app *fiber.App) {
 	v1 := app.Group("/api/v1")
-	v1.Post("/text/:name", handleText)
-	v1.Post("/upload", handleUpload)
+	v1.Post("/text/:name", s.handleText)
+	v1.Post("/upload", s.handleUpload)
 
-	app.Post("/", handleText)
-	app.Put("/:name", handlePut)
+	app.Post("/", s.handleText)
+	app.Put("/:name", s.handlePut)
 
-	v1.Get("/file/:cid", handleCat)
+	app.Get("/:cid/:file", s.handleCat)
+	
 }
