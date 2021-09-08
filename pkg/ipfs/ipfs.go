@@ -17,10 +17,6 @@ type File struct {
 	Name   string
 }
 
-type object struct {
-	Hash string
-}
-
 // Client IPFS client
 type Client struct {
 	host string
@@ -45,8 +41,22 @@ func (c *Client) Ping() error {
 	return nil
 }
 
+// Object ...
+type Object struct {
+	Bytes string
+	Hash  string
+	Name  string
+	Size  string
+}
+
+// AddResult ...
+type AddResult struct {
+	Cid     string   `json:"cid"`
+	Objects []Object `json:"Objects"`
+}
+
 // Add add files
-func (c *Client) Add(srcs ...*File) (*string, error) {
+func (c *Client) Add(srcs ...*File) (*AddResult, error) {
 	nodes := make(map[string]files.Node, len(srcs))
 	for _, src := range srcs {
 		nodes[src.Name] = files.NewReaderFile(src.Reader)
@@ -66,21 +76,22 @@ func (c *Client) Add(srcs ...*File) (*string, error) {
 
 	defer resp.Close()
 
+	result := new(AddResult)
 	dec := json.NewDecoder(resp.Output)
-	var final string
 	for {
-		var out object
-		err = dec.Decode(&out)
+		var obj Object
+		err = dec.Decode(&obj)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			return nil, err
 		}
-		final = out.Hash
+		result.Objects = append(result.Objects, obj)
+		result.Cid = obj.Hash
 	}
 
-	return &final, nil
+	return result, nil
 }
 
 // Cat cat file

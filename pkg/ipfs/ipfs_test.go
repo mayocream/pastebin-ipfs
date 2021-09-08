@@ -34,7 +34,7 @@ func TestClient_Add(t *testing.T) {
 	cli := getTestClient()
 
 	cid, err := cli.Add(&File{
-		Name: "song.txt",
+		Name:   "song.txt",
 		Reader: strings.NewReader("唱不完一首歌"),
 	})
 
