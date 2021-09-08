@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
@@ -68,11 +68,13 @@ func (s *Server) handleUpload(c *fiber.Ctx) error {
 
 	res, err := s.ipc.Add(blobs...)
 	if err != nil {
+		zap.S().Errorf("ipfs add err: %s", err)
 		return err
 	}
 
 	for _, obj := range res.Objects {
 		if err := s.idx.SetExist(obj.Hash); err != nil {
+			zap.S().Errorf("idx set err: %s", err)
 			return err
 		}
 	}
@@ -98,11 +100,13 @@ func (s *Server) handlePut(c *fiber.Ctx) error {
 		Reader: bytes.NewReader(body),
 	})
 	if err != nil {
+		zap.S().Errorf("ipfs add err: %s", err)
 		return err
 	}
 
 	for _, obj := range res.Objects {
 		if err := s.idx.SetExist(obj.Hash); err != nil {
+			zap.S().Errorf("idx set err: %s", err)
 			return err
 		}
 	}
@@ -125,11 +129,13 @@ func (s *Server) handleText(c *fiber.Ctx) error {
 		Reader: bytes.NewReader(body),
 	})
 	if err != nil {
+		zap.S().Errorf("ipfs add err: %s", err)
 		return err
 	}
 
 	for _, obj := range res.Objects {
 		if err := s.idx.SetExist(obj.Hash); err != nil {
+			zap.S().Errorf("idx set err: %s", err)
 			return err
 		}
 	}
@@ -147,6 +153,7 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 
 	ok, err := s.idx.Exist(cid)
 	if err != nil {
+		zap.S().Errorf("idx get err: %s", err)
 		return err
 	}
 
@@ -156,7 +163,7 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 
 	src, err := s.ipc.CatStream(cid)
 	if err != nil {
-		log.Println("cat cid err: ", err)
+		zap.S().Errorf("ipfs cat err: %s", err)
 		return fiber.ErrInternalServerError
 	}
 
