@@ -1,6 +1,7 @@
 package ipfs
 
 import (
+	"strings"
 	"sync"
 	"testing"
 )
@@ -32,15 +33,16 @@ func TestClient_Ping(t *testing.T) {
 func TestClient_Add(t *testing.T) {
 	cli := getTestClient()
 
-	cid, err := cli.Add([]byte(`
-	# Snale cute
-	`))
+	cid, err := cli.Add(&File{
+		Name:   "song.txt",
+		Reader: strings.NewReader("唱不完一首歌"),
+	})
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("cid: %s", cid)
+	t.Logf("cid: %s", *cid)
 }
 
 func TestClient_Cat(t *testing.T) {

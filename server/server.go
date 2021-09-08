@@ -13,18 +13,35 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+
+	"github.com/mayocream/pastebin-ipfs/pkg/index"
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
 
-// App config
-type App struct {
-	Addr       string
+// Config ...
+type Config struct {
 	IPFSClient *ipfs.Client
+	Index      *index.Index
+}
+
+// Server server
+type Server struct {
+	ipc *ipfs.Client
+	idx *index.Index
+}
+
+func New(conf *Config) *Server {
+	return &Server{
+		ipc: conf.IPFSClient,
+		idx: conf.Index,
+	}
 }
 
 // Start start http server
-func Start(conf App) {
-	app := fiber.New()
+func (s *Server) Start(addr string) {
+	app := fiber.New(fiber.Config{
+		BodyLimit: 100 << 20,
+	})
 
 	// register middlewares
 	app.Use(recover.New())
@@ -35,35 +52,39 @@ func Start(conf App) {
 	limiter.ConfigDefault.Next = func(c *fiber.Ctx) bool {
 		return c.IP() == "127.0.0.1"
 	}
-	app.Use(limiter.New())
+	app.Use(limiter.New(limiter.Config{
+		Max: 20,
+	}))
 
-	ipfsClient = conf.IPFSClient
-	registerRoutes(app)
+	s.registerRoutes(app)
 
-	ctx := Graceful()
-	go func() {
-		<-ctx.Done()
-		log.Println("Gracefully shutting down...")
-		app.Shutdown()
-	}()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	defer cancel()
 
-	log.Println("server listen: ", conf.Addr)
-	if err := app.Listen(conf.Addr); err != nil {
-		log.Panic(err)
+	go gracefulShutdown(ctx, app)
+
+	log.Println("server listen at ", addr)
+	if err := app.Listen(addr); err != nil {
+		log.Fatal(err)
 	}
 
 	log.Println("Running cleanup tasks...")
 }
 
-// Graceful context
-func Graceful() context.Context {
-	ctx := context.Background()
-	ctx, _ = signal.NotifyContext(ctx, os.Interrupt, os.Kill)
-	return ctx
+func gracefulShutdown(ctx context.Context, app *fiber.App) {
+	<-ctx.Done()
+	log.Println("Gracefully shutting down...")
+	app.Shutdown()
 }
 
-func registerRoutes(app *fiber.App) {
+func (s *Server) registerRoutes(app *fiber.App) {
 	v1 := app.Group("/api/v1")
-	v1.Post("/file", handleAdd)
-	v1.Get("/file/:cid", handleCat)
+	v1.Post("/text/:name", s.handleText)
+	v1.Post("/upload", s.handleUpload)
+
+	app.Post("/", s.handleText)
+	app.Put("/:name", s.handlePut)
+
+	app.Get("/:cid/:file", s.handleCat)
+	
 }
