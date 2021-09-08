@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/mayocream/pastebin-ipfs/pkg/index"
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 	"github.com/mayocream/pastebin-ipfs/server"
 	"go.uber.org/zap"
 )
 
 var (
-	addr     = flag.String("addr", ":3939", "HTTP listen")
-	ipfsAddr = flag.String("ipfs", "127.0.0.1:5001", "IPFS address")
-	debug    = flag.Bool("debug", false, "Debug mode")
-	logLevel = flag.String("log-level", "info", "Log level")
+	addr           = flag.String("addr", ":3939", "HTTP listen")
+	ipfsAddr       = flag.String("ipfs", "127.0.0.1:5001", "IPFS address")
+	debug          = flag.Bool("debug", false, "Debug mode")
+	logLevel       = flag.String("log-level", "info", "Log level")
+	cacheStorePath = flag.String("cache-store-path", ".pastebin", "Cache store path")
 )
 
 func main() {
@@ -23,12 +25,18 @@ func main() {
 
 	var err error
 	app := server.App{
-		Addr:     *addr,
+		Addr: *addr,
 	}
+
+	idx, err := index.NewIndex(*cacheStorePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	app.Index = idx
 
 	app.IPFSClient, err = ipfs.NewClient(*ipfsAddr)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	if app.IPFSClient.Ping() != nil {
