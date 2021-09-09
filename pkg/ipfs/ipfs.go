@@ -25,7 +25,7 @@ type Client struct {
 
 // NewClient create new IPFS client
 func NewClient(host string) (*Client, error) {
-	sh := shell.NewShell("localhost:5001")
+	sh := shell.NewShell(host)
 	c := &Client{
 		host: host,
 		sh:   sh,
@@ -36,7 +36,7 @@ func NewClient(host string) (*Client, error) {
 // Ping test network
 func (c *Client) Ping() error {
 	if !c.sh.IsUp() {
-		return errors.New("server down")
+		return errors.New("server is down")
 	}
 	return nil
 }
