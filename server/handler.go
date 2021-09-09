@@ -12,6 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const metadataFileName = "__metadata.json"
+
 // UploadResp ...
 type UploadResp struct {
 	Cid string `json:"cid"`
@@ -19,7 +21,6 @@ type UploadResp struct {
 
 // Object object
 type Object struct {
-	Cid      string `json:"cid"`
 	Name     string `json:"name"`
 	MIMEType string `json:"mime_type"`
 	Size     int64  `json:"size"`
@@ -69,20 +70,20 @@ func (s *Server) handleUpload(c *fiber.Ctx) error {
 		}
 	}
 
+	meta.Objects = s.metadata(blobs...)
+
 	blobs = append(blobs, &file{
-		Name:   "metadata.json",
+		Name:   metadataFileName,
 		Reader: strings.NewReader(meta.String()),
 	})
 
-	objs, err := s.creates(blobs...)
+	cid, err := s.creates(blobs...)
 	if err != nil {
 		zap.S().Errorf("create err: %s", err)
 		return err
 	}
 
-	meta.Objects = objs
-
-	return c.Status(http.StatusCreated).JSON(meta)
+	return c.Status(http.StatusCreated).JSON(cid)
 }
 
 // curl -T <file> <url>/filename
@@ -98,18 +99,30 @@ func (s *Server) handlePut(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	objs, err := s.creates(&file{
+	meta := &Metadata{
+		Author:           c.FormValue("author", "anonymous"),
+		EncryptAlgorithm: c.FormValue("encrypt_algorithm", "none"),
+		CreatedAt:        time.Now(),
+	}
+
+	blob := &file{
 		Name:     fn,
 		MIMEType: "plain/text",
 		Reader:   bytes.NewReader(body),
+		Size:     int64(len(body)),
+	}
+
+	meta.Objects = s.metadata(blob)
+
+	cid, err := s.creates(blob, &file{
+		Name:   metadataFileName,
+		Reader: strings.NewReader(meta.String()),
 	})
 
-    if err != nil {
-        zap.S().Errorf("creates err: %s", err)
-        return err
-    }
-
-    cid := objs[len(objs)-1].Cid
+	if err != nil {
+		zap.S().Errorf("creates err: %s", err)
+		return err
+	}
 
 	ph := fmt.Sprintf("%s/%s/%s", c.Hostname(), cid, fn)
 	c.Status(http.StatusCreated).SendString(ph)

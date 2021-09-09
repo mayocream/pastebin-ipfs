@@ -40,7 +40,7 @@ func New(conf *Config) *Server {
 // Start start http server
 func (s *Server) Start(addr string) {
 	app := fiber.New(fiber.Config{
-		BodyLimit: 100 << 20,
+		BodyLimit: 1 << 20,
 	})
 
 	// register middlewares
@@ -80,10 +80,10 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 func (s *Server) registerRoutes(app *fiber.App) {
 	v1 := app.Group("/api/v1")
 	v1.Post("/upload", s.handleUpload)
+    v1.Get("/gallery", s.handleGallery)
 
 	app.Post("/", s.handlePut)
 	app.Put("/:name", s.handlePut)
 
-	app.Get("/:cid/:file", s.handleCat)
-
+	app.Get("/:cid/raw/:file", s.handleCat)
 }

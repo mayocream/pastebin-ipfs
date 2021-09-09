@@ -5,9 +5,9 @@ import (
 	"mime"
 	"net/textproto"
 
-	"github.com/spf13/cast"
 	"go.uber.org/zap"
 
+	"github.com/mayocream/pastebin-ipfs/pkg/index"
 	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
 
@@ -15,13 +15,24 @@ type file struct {
 	Name     string
 	MIMEType string
 	Reader   io.Reader
+	Size     int64
 }
 
-func (s *Server) creates(files ...*file) ([]Object, error) {
-	fs := make([]*ipfs.File, 0, len(files))
-	mimetypes := make(map[string]string)
+func (s *Server) metadata(files ...*file) (objs []Object) {
 	for _, f := range files {
-		mimetypes[f.Name] = f.MIMEType
+		obj := Object{
+			Name:     f.Name,
+			MIMEType: f.MIMEType,
+			Size:     f.Size,
+		}
+		objs = append(objs, obj)
+	}
+	return
+}
+
+func (s *Server) creates(files ...*file) (cid string, err error) {
+	fs := make([]*ipfs.File, 0, len(files))
+	for _, f := range files {
 		fs = append(fs, &ipfs.File{
 			Name:   f.Name,
 			Reader: f.Reader,
@@ -30,27 +41,23 @@ func (s *Server) creates(files ...*file) ([]Object, error) {
 
 	res, err := s.ipc.Add(fs...)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	for _, obj := range res.Objects {
-		if err := s.idx.SetExist(obj.Hash); err != nil {
+		ot := index.ObjectTypeFile
+		if obj.Name == "" {
+			ot = index.ObjectTypeDir
+		} else if obj.Name == metadataFileName {
+			ot = index.ObjectTypeMeta
+		}
+		if err = s.idx.SetExist(obj.Hash, ot); err != nil {
 			zap.S().With("cid", obj.Hash).Errorf("idx set err: %s", err)
-			return nil, err
+			return
 		}
 	}
 
-	objs := make([]Object, 0, len(res.Objects))
-	for _, v := range res.Objects {
-		obj := Object{
-			Cid:      v.Hash,
-			Name:     v.Name,
-			MIMEType: mimetypes[v.Name],
-			Size:     cast.ToInt64(v.Size),
-		}
-		objs = append(objs, obj)
-	}
-	return objs, nil
+	return
 }
 
 func mediaTypeOrDefault(header textproto.MIMEHeader) string {
