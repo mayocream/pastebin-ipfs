@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -145,7 +146,8 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	src, err := s.ipc.CatStream(cid)
+    path := filepath.Join(cid, c.Params("file"))
+	src, err := s.ipc.CatStream(path)
 	if err != nil {
 		zap.S().Errorf("ipfs cat err: %s", err)
 		return fiber.ErrInternalServerError

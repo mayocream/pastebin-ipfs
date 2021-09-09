@@ -112,8 +112,8 @@ func (c *Client) Cat(cid string) ([]byte, error) {
 }
 
 // Cat cat file
-func (c *Client) CatStream(cid string) (io.ReadCloser, error) {
-	src, err := c.sh.Cat(cid)
+func (c *Client) CatStream(path string) (io.ReadCloser, error) {
+	src, err := c.sh.Cat(path)
 	if err != nil {
 		return nil, err
 	}

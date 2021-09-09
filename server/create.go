@@ -44,11 +44,14 @@ func (s *Server) creates(files ...*file) (cid string, err error) {
 		return
 	}
 
+    cid = res.Cid
+
 	for _, obj := range res.Objects {
 		ot := index.ObjectTypeFile
-		if obj.Name == "" {
+		switch obj.Name {
+		case "":
 			ot = index.ObjectTypeDir
-		} else if obj.Name == metadataFileName {
+		case metadataFileName:
 			ot = index.ObjectTypeMeta
 		}
 		if err = s.idx.SetExist(obj.Hash, ot); err != nil {

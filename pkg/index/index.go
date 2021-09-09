@@ -71,19 +71,22 @@ func (i *Index) FilterFileCid(limit int) (ids []string, err error) {
 		opts.Prefix = []byte(recentPrefix)
 		opts.Reverse = true
 		it := txn.NewIterator(opts)
+		defer it.Close()
 		for i := 0; it.Valid(); it.Next() {
-            i++
-            ids = append(ids, string(it.Item().KeyCopy(nil)))
-            // delete key
-            if i > limit {
-                if err := txn.Delete(it.Item().Key()); err != nil {
-                    return err
-                }
-            }
+			i++
+			// delete key
+			if i > limit {
+				if err := txn.Delete(it.Item().Key()); err != nil {
+					return err
+				}
+				continue
+			}
+			v, _ := it.Item().ValueCopy(nil)
+			ids = append(ids, string(v))
 		}
-        return nil
+		return nil
 	})
-    return
+	return
 }
 
 func (i *Index) Close() {
