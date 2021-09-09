@@ -12,7 +12,12 @@ import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-css'
 
 export default function Publish(props: any) {
-  const { handleSubmit, control, reset } = useForm()
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm()
   const [code, setCode] = useState('')
   const onSubmit = async (data: any) => {
     console.log(data)
@@ -34,44 +39,26 @@ export default function Publish(props: any) {
 
   return (
     <Container maxWidth="md">
-      <div
-        style={{
-          position: 'fixed',
-          right: '60px',
-          bottom: '60px',
-        }}
-      >
+      <div tw="fixed right-[60px] bottom-[60px]">
         <Fab color="primary" aria-label="add">
           <AddIcon />
         </Fab>
       </div>
       <Paper>
-        <div
-          style={{
-            width: '100%',
-          }}
-          tw="flex m-6 ml-16 pt-4 pb-6"
-        >
+        <div tw="flex m-6 ml-16 pt-4 pb-6 w-full">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div
-              style={{
-                width: '300px',
-              }}
-            >
+            <div tw="w-[300px]">
               <Controller
                 // TODO find code language by file suffix, eg: "a.md, b.js, c.yaml"
                 name="filename"
                 control={control}
                 defaultValue=""
+                rules={{ required: true }}
                 render={({ field }) => <TextField fullWidth label="File name" {...field} />}
               />
+              {/* {errors.filename && <span>This field is required</span>} */}
             </div>
-            <div
-              tw="my-4"
-              style={{
-                minWidth: '800px',
-              }}
-            >
+            <div tw="my-4 min-w-[800px]">
               <Paper variant="outlined">
                 <Editor
                   value={code}
@@ -91,12 +78,7 @@ export default function Publish(props: any) {
                 />
               </Paper>
             </div>
-            <div
-              tw="my-4"
-              style={{
-                width: '200px',
-              }}
-            >
+            <div tw="my-4 w-[200px]">
               <Controller
                 name="author"
                 control={control}
