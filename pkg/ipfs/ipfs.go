@@ -62,6 +62,7 @@ func (c *Client) Add(srcs ...*File) (*AddResult, error) {
 		nodes[src.Name] = files.NewReaderFile(src.Reader)
 	}
 
+    // FIXME pass mimetype to ipfs add command
 	sf := files.NewMapDirectory(nodes)
 	slf := files.NewSliceDirectory([]files.DirEntry{files.FileEntry("", sf)})
 	reader := files.NewMultiFileReader(slf, true)

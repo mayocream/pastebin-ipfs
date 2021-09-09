@@ -79,12 +79,11 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 
 func (s *Server) registerRoutes(app *fiber.App) {
 	v1 := app.Group("/api/v1")
-	v1.Post("/text/:name", s.handleText)
 	v1.Post("/upload", s.handleUpload)
 
-	app.Post("/", s.handleText)
+	app.Post("/", s.handlePut)
 	app.Put("/:name", s.handlePut)
 
 	app.Get("/:cid/:file", s.handleCat)
-	
+
 }

@@ -10,8 +10,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
-
-	"github.com/mayocream/pastebin-ipfs/pkg/ipfs"
 )
 
 // UploadResp ...
@@ -19,11 +17,20 @@ type UploadResp struct {
 	Cid string `json:"cid"`
 }
 
-// Metadata metadata
+// Object object
+type Object struct {
+	Cid      string `json:"cid"`
+	Name     string `json:"name"`
+	MIMEType string `json:"mime_type"`
+	Size     int64  `json:"size"`
+}
+
+// Metadata metadata.json
 type Metadata struct {
-	Author    string    `json:"author"`
-	CreatedAt time.Time `json:"created_at"`
-	// TODO files dag
+	Author           string    `json:"author"`
+	CreatedAt        time.Time `json:"created_at"`
+	EncryptAlgorithm string    `json:"encrypt_algorithm"`
+	Objects          []Object  `json:"objects"`
 }
 
 func (m *Metadata) String() string {
@@ -32,60 +39,56 @@ func (m *Metadata) String() string {
 }
 
 func (s *Server) handleUpload(c *fiber.Ctx) error {
-	blobs := make([]*ipfs.File, 0)
+	blobs := make([]*file, 0)
 	form, err := c.MultipartForm()
 	if err != nil {
 		return fiber.ErrBadRequest
 	}
 
+	meta := &Metadata{
+		Author:           c.FormValue("author", "anonymous"),
+		EncryptAlgorithm: c.FormValue("encrypt_algorithm", "none"),
+		CreatedAt:        time.Now(),
+	}
+
 	for _, files := range form.File {
-		for _, file := range files {
-			if file.Size == 0 {
+		for _, f := range files {
+			if f.Size == 0 {
 				continue
 			}
-			fr, err := file.Open()
+			fr, err := f.Open()
 			if err != nil {
 				return fiber.ErrBadRequest
 			}
 			defer fr.Close()
-
-			blobs = append(blobs, &ipfs.File{
-				Name:   file.Filename,
-				Reader: fr,
+			blobs = append(blobs, &file{
+				Name:     f.Filename,
+				MIMEType: mediaTypeOrDefault(f.Header),
+				Reader:   fr,
 			})
 		}
 	}
 
-	meta := &Metadata{
-		Author:    c.FormValue("author", "unknown"),
-		CreatedAt: time.Now(),
-	}
-
-	blobs = append(blobs, &ipfs.File{
-		Name:   "metadata",
+	blobs = append(blobs, &file{
+		Name:   "metadata.json",
 		Reader: strings.NewReader(meta.String()),
 	})
 
-	res, err := s.ipc.Add(blobs...)
+	objs, err := s.creates(blobs...)
 	if err != nil {
-		zap.S().Errorf("ipfs add err: %s", err)
+		zap.S().Errorf("create err: %s", err)
 		return err
 	}
 
-	for _, obj := range res.Objects {
-		if err := s.idx.SetExist(obj.Hash); err != nil {
-			zap.S().Errorf("idx set err: %s", err)
-			return err
-		}
-	}
+	meta.Objects = objs
 
-	return c.Status(http.StatusCreated).JSON(res)
+	return c.Status(http.StatusCreated).JSON(meta)
 }
 
 // curl -T <file> <url>/filename
 // curl -T <file> <url>/
 func (s *Server) handlePut(c *fiber.Ctx) error {
-	fn := c.Params("name")
+	fn := c.Params("name", "plain.txt")
 	if len(fn) == 0 {
 		return fiber.ErrBadRequest
 	}
@@ -95,52 +98,20 @@ func (s *Server) handlePut(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	res, err := s.ipc.Add(&ipfs.File{
-		Name:   fn,
-		Reader: bytes.NewReader(body),
+	objs, err := s.creates(&file{
+		Name:     fn,
+		MIMEType: "plain/text",
+		Reader:   bytes.NewReader(body),
 	})
-	if err != nil {
-		zap.S().Errorf("ipfs add err: %s", err)
-		return err
-	}
 
-	for _, obj := range res.Objects {
-		if err := s.idx.SetExist(obj.Hash); err != nil {
-			zap.S().Errorf("idx set err: %s", err)
-			return err
-		}
-	}
+    if err != nil {
+        zap.S().Errorf("creates err: %s", err)
+        return err
+    }
 
-	ph := fmt.Sprintf("%s/%s/%s", c.Hostname(), res.Cid, fn)
-	c.Status(http.StatusCreated).SendString(ph)
-	return nil
-}
+    cid := objs[len(objs)-1].Cid
 
-func (s *Server) handleText(c *fiber.Ctx) error {
-	fn := c.Params("name", "plain.txt")
-
-	body := c.Body()
-	if len(body) == 0 {
-		return fiber.ErrBadRequest
-	}
-
-	res, err := s.ipc.Add(&ipfs.File{
-		Name:   fn,
-		Reader: bytes.NewReader(body),
-	})
-	if err != nil {
-		zap.S().Errorf("ipfs add err: %s", err)
-		return err
-	}
-
-	for _, obj := range res.Objects {
-		if err := s.idx.SetExist(obj.Hash); err != nil {
-			zap.S().Errorf("idx set err: %s", err)
-			return err
-		}
-	}
-
-	ph := fmt.Sprintf("%s/%s", res.Cid, fn)
+	ph := fmt.Sprintf("%s/%s/%s", c.Hostname(), cid, fn)
 	c.Status(http.StatusCreated).SendString(ph)
 	return nil
 }
