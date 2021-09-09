@@ -27,8 +27,20 @@ Vist [Webpage](https://paste.shoujo.io).
 
 ### Terminal
 
+Create snippets:
+
 ```bash
-curl -T doc.md https://paste.shoujo.io/ # remember to have a slash '/' at the end
+$ curl -T doc.md https://paste.shoujo.io/ # remember to have a slash '/' at the end
+# or
+$ curl -X POST https://paste.shoujo.io -d 'いつか君に伝えたいと思っていた気持ちは'
+# or
+$ curl -X PUT https://paste.shoujo.io/lyrics.txt -d 'Stars fall, birds sleep'
+```
+
+Cat snippets:
+
+```bash
+curl https://paste.shoujo.io/QmTnhJH8azDsudkxgp8wNLEN5Zq86NAE6DAkzwGBDpaQ6Z/raw/plain.txt
 ```
 
 ## Develop
