@@ -12,6 +12,7 @@ import {
   ListItemText,
 } from '@material-ui/core'
 import { Menu, Inbox, Mail } from '@material-ui/icons'
+import 'twin.macro'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,8 +55,8 @@ function MenuAppBar() {
         </Toolbar>
         <Drawer anchor="left" open={isDrawerVisible} onClose={() => setIsDrawVisible(false)}>
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem button key={text}>
+            {['Publish', 'Gallery', 'Cid', 'API Tests', 'API Docs'].map((text, index) => (
+              <ListItem button key={text} tw="w-60">
                 <ListItemIcon>{index % 2 === 0 ? <Inbox /> : <Mail />}</ListItemIcon>
                 <ListItemText primary={text} />
               </ListItem>

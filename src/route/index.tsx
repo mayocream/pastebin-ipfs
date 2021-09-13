@@ -1,7 +1,7 @@
 import React from 'react'
 import { Router } from '@reach/router'
 import { MenuAppBar } from './layout/AppBar'
-import { Publish } from '@/pages/Publish'
+import { Publish } from './pages/Publish'
 
 function App() {
   return (
