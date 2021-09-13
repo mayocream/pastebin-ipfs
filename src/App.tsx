@@ -1,12 +1,12 @@
 import React from 'react'
 import { Router } from '@reach/router'
-import AppBar from './layout/AppBar'
-import Publish from './pages/publish'
+import { MenuAppBar } from './layout/AppBar'
+import { Publish } from './pages/Publish'
 
 function App() {
   return (
     <>
-      <AppBar />
+      <MenuAppBar />
       <Router>
         <Publish path="/" />
       </Router>

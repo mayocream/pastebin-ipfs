@@ -1,16 +1,17 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-// import AccountCircle from '@material-ui/icons/AccountCircle'
-// import Switch from '@material-ui/core/Switch'
-// import FormControlLabel from '@material-ui/core/FormControlLabel'
-// import FormGroup from '@material-ui/core/FormGroup'
-// import MenuItem from '@material-ui/core/MenuItem'
-// import Menu from '@material-ui/core/Menu'
+import {
+  IconButton,
+  Typography,
+  Toolbar,
+  AppBar,
+  Drawer,
+  makeStyles,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@material-ui/core'
+import { Menu, Inbox, Mail } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,12 +25,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function MenuAppBar() {
+function MenuAppBar() {
   const classes = useStyles()
   const [auth, setAuth] = React.useState(true)
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [isDrawerVisible, setIsDrawVisible] = React.useState(false)
 
-  const handleChange = (event: any) => {
+  const handleChange = (event) => {
     setAuth(event.target.checked)
   }
 
@@ -37,14 +39,32 @@ export default function MenuAppBar() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setIsDrawVisible(true)}
+          >
+            <Menu />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             Pastebin/IO
           </Typography>
         </Toolbar>
+        <Drawer anchor="left" open={isDrawerVisible} onClose={() => setIsDrawVisible(false)}>
+          <List>
+            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+              <ListItem button key={text}>
+                <ListItemIcon>{index % 2 === 0 ? <Inbox /> : <Mail />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
       </AppBar>
     </div>
   )
 }
+
+export { MenuAppBar }

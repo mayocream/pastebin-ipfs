@@ -11,7 +11,7 @@ import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-css'
 
-export default function Publish(props: any) {
+function Publish(props: any) {
   const {
     handleSubmit,
     control,
@@ -107,3 +107,5 @@ export default function Publish(props: any) {
     </Container>
   )
 }
+
+export { Publish }
