@@ -37,7 +37,7 @@ function Publish() {
 
     const blob = new Blob([code], { type: 'text/plain' })
     formData.append('file', blob)
-    const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v1/upload', {
+    const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
       method: 'POST',
       body: formData,
       mode: 'cors',

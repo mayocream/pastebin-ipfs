@@ -78,7 +78,7 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 }
 
 func (s *Server) registerRoutes(app *fiber.App) {
-	v1 := app.Group("/api/v1")
+	v1 := app.Group("/api/v0")
 	v1.Post("/upload", s.handleUpload)
     v1.Get("/gallery", s.handleGallery)
 
