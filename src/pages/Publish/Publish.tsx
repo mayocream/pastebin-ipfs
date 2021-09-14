@@ -35,7 +35,26 @@ function Publish() {
     formData.append('public', data.public)
     formData.append('filename', data.filename ?? 'plain.txt')
 
-    const blob = new Blob([code], { type: 'text/plain' })
+    let blob = new Blob([code], { type: 'text/plain' })
+    // encrypt
+    if (data?.password) {
+      const enc = new TextEncoder()
+      const iv = crypto.getRandomValues(new Uint8Array(16))
+      const key = await crypto.subtle.importKey('raw', enc.encode(data.password), 'AES-GCM', false, [
+        'encrypt',
+        'decrypt',
+      ])
+      const encryptedCode: Uint8Array = await crypto.subtle.encrypt(
+        {
+          name: 'AES-GCM',
+          iv: iv,
+        },
+        key,
+        enc.encode(code)
+      )
+      blob = new Blob([encryptedCode], { type: 'text/plain' })
+    }
+
     formData.append('file', blob)
     const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
       method: 'POST',
