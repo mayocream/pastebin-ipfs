@@ -1,16 +1,21 @@
+import 'twin.macro'
+
+import {
+  AppBar,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  makeStyles,
+} from '@material-ui/core'
+import { Inbox, Mail, Menu } from '@material-ui/icons'
+
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
-// import AccountCircle from '@material-ui/icons/AccountCircle'
-// import Switch from '@material-ui/core/Switch'
-// import FormControlLabel from '@material-ui/core/FormControlLabel'
-// import FormGroup from '@material-ui/core/FormGroup'
-// import MenuItem from '@material-ui/core/MenuItem'
-// import Menu from '@material-ui/core/Menu'
+import { navigate } from '@reach/router'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,27 +29,51 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function MenuAppBar() {
+function MenuAppBar() {
   const classes = useStyles()
-  const [auth, setAuth] = React.useState(true)
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  // const [auth, setAuth] = React.useState(true)
+  // const [anchorEl, setAnchorEl] = React.useState(null)
+  const [isDrawerVisible, setIsDrawVisible] = React.useState(false)
 
-  const handleChange = (event: any) => {
-    setAuth(event.target.checked)
-  }
+  // const handleChange = (event) => {
+  //   setAuth(event.target.checked)
+  // }
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setIsDrawVisible(true)}
+          >
+            <Menu />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             Pastebin/IO
           </Typography>
         </Toolbar>
+        <Drawer anchor="left" open={isDrawerVisible} onClose={() => setIsDrawVisible(false)}>
+          <List>
+            {['Publish', 'Gallery', 'Cid', 'API Tests', 'API Docs'].map((text, index) => (
+              <ListItem
+                button
+                key={text}
+                tw="w-60"
+                onClick={() => navigate(text !== 'Publish' ? text.replace(' ', '-').toLowerCase() : '/')}
+              >
+                <ListItemIcon>{index % 2 === 0 ? <Inbox /> : <Mail />}</ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
       </AppBar>
     </div>
   )
 }
+
+export { MenuAppBar }
