@@ -1,7 +1,7 @@
 import React from 'react'
 
-function Api_Docs() {
+function ApiTests() {
   return <div>dfsfsd</div>
 }
 
-export { Api_Docs }
+export { ApiTests }

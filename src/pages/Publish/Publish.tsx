@@ -11,7 +11,7 @@ import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-css'
 
-function Publish(props: any) {
+function Publish() {
   const {
     handleSubmit,
     control,
