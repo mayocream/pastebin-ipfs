@@ -1,7 +1,7 @@
 import React from 'react'
 
-function ApiDocs() {
+function View() {
   return <div>dfsfsd</div>
 }
 
-export { ApiDocs }
+export { View }
