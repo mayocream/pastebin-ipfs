@@ -24,7 +24,7 @@ const (
 
 const (
 	existPrefix  = "_cid"
-	recentPrefix = "_re"
+	recentPrefix = "_recent000000"
 )
 
 // NewIndex new idx
@@ -43,7 +43,6 @@ func NewIndex(path string) (*Index, error) {
 func (i *Index) SetExist(cid string, ot ObjectType) error {
 	return i.db.Update(func(txn *badger.Txn) error {
 		if ot == ObjectTypeFile {
-			// count recent
 			txn.Set([]byte(recentPrefix+cast.ToString(time.Now().Unix())), []byte(cid))
 		}
 		return txn.Set([]byte(existPrefix+cid), []byte(cast.ToString(ot)))
@@ -65,14 +64,17 @@ func (i *Index) Exist(cid string) (ok bool, err error) {
 	return
 }
 
+// FIXME not works...
 func (i *Index) FilterFileCid(limit int) (ids []string, err error) {
 	err = i.db.Update(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
-		opts.Prefix = []byte(recentPrefix)
-		opts.Reverse = true
+        opts.Prefix = []byte(recentPrefix)
+        opts.Reverse = true
 		it := txn.NewIterator(opts)
 		defer it.Close()
-		for i := 0; it.Valid(); it.Next() {
+
+        var i int
+		for it.Seek(opts.Prefix); it.Valid(); it.Next() {
 			i++
 			// delete key
 			if i > limit {
