@@ -1,28 +1,37 @@
-import { Container, Paper } from '@material-ui/core'
-import React, { useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { TextField, Checkbox, Switch, Button, Fab } from '@material-ui/core'
-import AddIcon from '@material-ui/icons/Add'
 import 'twin.macro'
-import Editor from 'react-simple-code-editor'
-import { highlight, languages } from 'prismjs'
 import 'prismjs/components/prism-clike'
 import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-css'
 
+import { Button, Checkbox, Fab, Switch, TextField } from '@material-ui/core'
+import { Container, Paper } from '@material-ui/core'
+import { Controller, useForm } from 'react-hook-form'
+import React, { useState } from 'react'
+import { highlight, languages } from 'prismjs'
+
+import AddIcon from '@material-ui/icons/Add'
+import Editor from 'react-simple-code-editor'
+
+interface IPublicData {
+  filename: string
+  author: string
+  public: boolean
+  encrypt: boolean
+  password?: string
+}
+
 function Publish() {
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm()
+  const { handleSubmit, control, watch } = useForm()
   const [code, setCode] = useState('')
-  const onSubmit = async (data: any) => {
+
+  const watchEncrypt = watch('encrypt', true)
+
+  const onSubmit = async (data: IPublicData) => {
     console.log(data)
     const formData = new FormData()
     formData.append('author', data.author)
+    // @ts-ignore
     formData.append('public', data.public)
     formData.append('filename', data.filename ?? 'plain.txt')
 
@@ -95,6 +104,25 @@ function Publish() {
               />
               Show on gallery
             </div>
+            <div>
+              <Controller
+                name="encrypt"
+                control={control}
+                defaultValue={false}
+                render={({ field }) => <Switch {...field} />}
+              />
+              Encrypt
+            </div>
+            {watchEncrypt && (
+              <div tw="my-4 w-[200px]">
+                <Controller
+                  name="password"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => <TextField fullWidth label="Password" {...field} />}
+                />
+              </div>
+            )}
             {/* TODO add more files by repeat "<Paper>" component */}
             <div tw="mt-6">
               <Button type="submit" color="primary" variant="contained">

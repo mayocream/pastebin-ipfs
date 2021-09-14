@@ -1,5 +1,6 @@
 import 'twin.macro'
 import { css as cssImport } from '@emotion/react'
+// @ts-ignore
 import { CSSInterpolation } from '@emotion/serialize'
 import styledImport from '@emotion/styled'
 
@@ -15,6 +16,7 @@ declare module 'react' {
         css?: CSSInterpolation
     }
     // The inline svg css prop
+    // @ts-ignore
     interface SVGProps<T> extends SVGProps<SVGSVGElement> {
         css?: CSSInterpolation
     }

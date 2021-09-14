@@ -1,18 +1,20 @@
-import React from 'react'
+import 'twin.macro'
+
 import {
-  IconButton,
-  Typography,
-  Toolbar,
   AppBar,
   Drawer,
-  makeStyles,
+  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Toolbar,
+  Typography,
+  makeStyles,
 } from '@material-ui/core'
-import { Menu, Inbox, Mail } from '@material-ui/icons'
-import 'twin.macro'
+import { Inbox, Mail, Menu } from '@material-ui/icons'
+
+import React from 'react'
 import { navigate } from '@reach/router'
 
 const useStyles = makeStyles((theme) => ({
@@ -29,13 +31,13 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuAppBar() {
   const classes = useStyles()
-  const [auth, setAuth] = React.useState(true)
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  // const [auth, setAuth] = React.useState(true)
+  // const [anchorEl, setAnchorEl] = React.useState(null)
   const [isDrawerVisible, setIsDrawVisible] = React.useState(false)
 
-  const handleChange = (event) => {
-    setAuth(event.target.checked)
-  }
+  // const handleChange = (event) => {
+  //   setAuth(event.target.checked)
+  // }
 
   return (
     <div className={classes.root}>
