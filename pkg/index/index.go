@@ -1,12 +1,16 @@
 package index
 
 import (
+	"bytes"
 	"errors"
 	"time"
 
 	"github.com/dgraph-io/badger/v3"
 	"github.com/spf13/cast"
+	"go.uber.org/atomic"
 )
+
+var atom atomic.Uint32
 
 // Index idx
 type Index struct {
@@ -24,7 +28,7 @@ const (
 
 const (
 	existPrefix  = "_cid"
-	recentPrefix = "_recent000000"
+	recentPrefix = "_recent"
 )
 
 // NewIndex new idx
@@ -43,7 +47,9 @@ func NewIndex(path string) (*Index, error) {
 func (i *Index) SetExist(cid string, ot ObjectType) error {
 	return i.db.Update(func(txn *badger.Txn) error {
 		if ot == ObjectTypeFile {
-			txn.Set([]byte(recentPrefix+cast.ToString(time.Now().Unix())), []byte(cid))
+			randomStr := cast.ToString(time.Now().UnixNano())
+			randomStr += cast.ToString(atom.Add(1))
+			txn.Set([]byte(recentPrefix+randomStr), []byte(cid))
 		}
 		return txn.Set([]byte(existPrefix+cid), []byte(cast.ToString(ot)))
 	})
@@ -68,13 +74,16 @@ func (i *Index) Exist(cid string) (ok bool, err error) {
 func (i *Index) FilterFileCid(limit int) (ids []string, err error) {
 	err = i.db.Update(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
-        opts.Prefix = []byte(recentPrefix)
-        opts.Reverse = true
+		// opts.Prefix = []byte(recentPrefix)
+		opts.Reverse = true
 		it := txn.NewIterator(opts)
 		defer it.Close()
 
-        var i int
-		for it.Seek(opts.Prefix); it.Valid(); it.Next() {
+		var i int
+		for it.Rewind(); it.Valid(); it.Next() {
+            if !bytes.HasPrefix(it.Item().Key(), []byte(recentPrefix)) {
+                continue
+            }
 			i++
 			// delete key
 			if i > limit {
