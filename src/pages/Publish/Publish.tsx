@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Button, Checkbox, Fab, Switch, TextField } from '@material-ui/core'
+import React, { useState, useEffect } from 'react'
+import { Button, Fab, Switch, TextField } from '@material-ui/core'
 import { Container, Paper } from '@material-ui/core'
 import { Controller, useForm } from 'react-hook-form'
 import { highlight, languages } from 'prismjs'
@@ -25,10 +25,15 @@ function Publish() {
   const { handleSubmit, control, watch } = useForm()
   const [code, setCode] = useState('')
 
-  const watchEncrypt = watch('encrypt', true)
+  const watchEncrypt = watch('encrypt', false)
+
+  useEffect(() => {
+    console.log(watchEncrypt)
+  }, [watchEncrypt])
 
   const onSubmit = async (data: IPublicData) => {
     console.log(data)
+    // return
     const formData = new FormData()
     formData.append('author', data.author)
     // @ts-ignore
@@ -37,32 +42,39 @@ function Publish() {
 
     let blob = new Blob([code], { type: 'text/plain' })
     // encrypt
-    if (data?.password) {
+    if (data.password) {
       const enc = new TextEncoder()
       const iv = crypto.getRandomValues(new Uint8Array(16))
-      const key = await crypto.subtle.importKey('raw', enc.encode(data.password), 'AES-GCM', false, [
-        'encrypt',
-        'decrypt',
-      ])
-      const encryptedCode: Uint8Array = await crypto.subtle.encrypt(
-        {
-          name: 'AES-GCM',
-          iv: iv,
-        },
-        key,
-        enc.encode(code)
-      )
-      blob = new Blob([encryptedCode], { type: 'text/plain' })
+      try {
+        const key = await crypto.subtle.importKey('raw', enc.encode(data.password), 'AES-GCM', false, [
+          'encrypt',
+          'decrypt',
+        ])
+        const encryptedCode: Uint8Array = await crypto.subtle.encrypt(
+          {
+            name: 'AES-GCM',
+            iv: iv,
+          },
+          key,
+          enc.encode(code)
+        )
+        blob = new Blob([encryptedCode], { type: 'text/plain' })
+      } catch (error) {
+        alert('encrypt err')
+      }
     }
-
     formData.append('file', blob)
-    const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
-      method: 'POST',
-      body: formData,
-      mode: 'cors',
-    })
-    const result = await resp.json()
-    console.log(result)
+    try {
+      const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+      })
+      const result = await resp.json()
+      console.log(result)
+    } catch (error) {
+      alert('post err')
+    }
   }
 
   return (
