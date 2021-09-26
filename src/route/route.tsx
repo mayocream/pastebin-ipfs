@@ -16,7 +16,7 @@ function Route() {
       <Router>
         <RNotFound default />
         <RPublish path="/" />
-        <RView path="/cid" />
+        <RView path="/view" />
         <RGallery path="/gallery" />
       </Router>
     </div>
