@@ -1,9 +1,14 @@
 import 'twin.macro'
-
+import { useEffect } from 'react'
 import { Container, TextField } from '@material-ui/core'
 import { Match, navigate } from '@reach/router'
 
 function View() {
+  useEffect(() => {
+    fetch(import.meta.env.VITE_API_URL + '/QmPNKURHDipHmBvND1SkcHQBXbHZYXBrDnroiu1dvLZFVM/raw/nihao').then((res) =>
+      console.log(res.json)
+    )
+  }, [])
   let cid = ''
 
   function submit(code: string) {
