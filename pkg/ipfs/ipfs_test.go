@@ -4,6 +4,8 @@ import (
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 var testOnce sync.Once
@@ -42,16 +44,16 @@ func TestClient_Add(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Logf("cid: %s", *cid)
+	t.Logf("cid: %s", spew.Sdump(cid))
 }
 
 func TestClient_Cat(t *testing.T) {
 	cli := getTestClient()
 
-	file, err := cli.Cat("QmWLr7ca8U8CWiNZEZjd22PY87i85C8tioPPKa8gcnVcaj")
+	content, err := cli.Cat("QmSpVsNZaamFRh67SMWPqaGrCHetshAhfn7a16it94JQw9/song.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("content: %s", file)
+	t.Logf("content: %s", content)
 }
