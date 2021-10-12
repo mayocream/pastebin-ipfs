@@ -44,17 +44,20 @@ func NewIndex(path string) (*Index, error) {
 	return idx, nil
 }
 
+// SetExist cache a cid to filesystem
 func (i *Index) SetExist(cid string, ot ObjectType) error {
 	return i.db.Update(func(txn *badger.Txn) error {
-		if ot == ObjectTypeFile {
-			randomStr := cast.ToString(time.Now().UnixNano())
-			randomStr += cast.ToString(atom.Add(1))
-			txn.Set([]byte(recentPrefix+randomStr), []byte(cid))
+        // Cache recent created folders cid, we will list them in the gallery page.
+		if ot == ObjectTypeDir {
+			sortStr := cast.ToString(time.Now().UnixNano())
+			sortStr += cast.ToString(atom.Add(1))
+			txn.Set([]byte(recentPrefix+sortStr), []byte(cid))
 		}
 		return txn.Set([]byte(existPrefix+cid), []byte(cast.ToString(ot)))
 	})
 }
 
+// Exist check if a cid exsit
 func (i *Index) Exist(cid string) (ok bool, err error) {
 	i.db.View(func(txn *badger.Txn) error {
 		_, err := txn.Get([]byte(existPrefix + cid))
