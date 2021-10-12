@@ -45,10 +45,10 @@ func (s *Server) Start(addr string) {
 
 	// register middlewares
 	app.Use(recover.New())
-	app.Use(cache.New())
 	app.Use(etag.New())
 	app.Use(cors.New())
 	app.Use(compress.New())
+	app.Use(cache.New())
 	limiter.ConfigDefault.Next = func(c *fiber.Ctx) bool {
 		return c.IP() == "127.0.0.1"
 	}
@@ -78,9 +78,10 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 }
 
 func (s *Server) registerRoutes(app *fiber.App) {
-	v1 := app.Group("/api/v0")
-	v1.Post("/upload", s.handleUpload)
-    v1.Get("/gallery", s.handleGallery)
+	v0 := app.Group("/api/v0")
+	v0.Post("/upload", s.handleUpload)
+    v0.Get("/gallery", s.handleGallery)
+    v0.Get("/:cid/:file", s.handleCat)
 
 	app.Post("/", s.handlePut)
 	app.Put("/:name", s.handlePut)
