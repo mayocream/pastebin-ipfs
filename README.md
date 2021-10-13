@@ -6,15 +6,15 @@ Pastebin built on IPFS, securely served by Distributed Web and Edge Network.
 
 It's like [gist](https://gist.github.com/) but for anonymous.
 
-[Preview](https://pasteb.shoujo.io)
+[Preview](https://paste.shoujo.io)
 
 ## Features
 
-- [Gallery](https://paste.shoujo.io/gallery) shows *Public* snippets
+<!-- - [Gallery](https://paste.shoujo.io/gallery) shows *Public* snippets -->
 - Stored in [IPFS](https://ipfs.io/) distributed network
 - *AES-GCM* Encryption
 - Open API (CORS Origin `*`)
-- File upload
+- File upload (API Only)
 - Cache by CDN (or [IPFS Gateway](https://cloudflare-ipfs.com))
 - Syntax highlight by [Prismjs](https://github.com/PrismJS/prism)
 - No Expiration

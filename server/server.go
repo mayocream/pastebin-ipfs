@@ -84,6 +84,8 @@ func (s *Server) registerRoutes(app *fiber.App) {
 	v0.Post("/upload", s.handleUpload)
     v0.Get("/gallery", s.handleGallery)
     v0.Get("/:cid/:file", s.handleCat)
+    v0.Post("/", s.handlePut)
+    v0.Put("/:name", s.handlePut)
 
 	app.Post("/", s.handlePut)
 	app.Put("/:name", s.handlePut)
