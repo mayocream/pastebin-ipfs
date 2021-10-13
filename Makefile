@@ -1,3 +1,5 @@
+all: build build-web
+
 build:
 	go build -o bin/pstbin cmd/main.go
 
