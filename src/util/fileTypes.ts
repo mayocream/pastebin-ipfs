@@ -1,13 +1,18 @@
-const types = {
-  rs: 'rust',
-  sh: 'bash',
-}
+const fileAlias = new Map([
+  ['rs', 'rust'],
+  ['sh', 'bash'],
+])
 
-function findType(filename: string): string {
-    const ext = filename.split('.').pop()
-    
-    
-    return "txt"
-}
+// find file language by file extension
+export function findFileLanguage(filename: string): string {
+  const ext = filename.split('.').pop()
+  if (ext === undefined || ext === '') {
+    return 'plain'
+  }
+  const alias = fileAlias.get(ext)
+  if (alias) {
+    return alias
+  }
 
-export { types }
+  return ext
+}

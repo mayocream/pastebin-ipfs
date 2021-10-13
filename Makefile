@@ -10,5 +10,8 @@ run: compose
 test:
 	go test -v --v ./...
 
-web:
-	cd src && pnpm run build
+build-web:
+	pnpm run build
+
+web-live:
+	pnpm run dev

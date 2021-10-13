@@ -12,99 +12,78 @@ import 'prismjs/components/prism-css'
 
 import AddIcon from '@material-ui/icons/Add'
 import Editor from 'react-simple-code-editor'
+import { aesEncrypt } from '@/util/crypt'
+import { RouteComponentProps } from '@reach/router'
 
-interface IPublicData {
-  filename: string
+interface ISubmitData {
   author: string
-  public: boolean
+  isPublic: boolean
+  filename: string
   encrypt: boolean
-  password?: string
+  password: string
 }
 
-function Publish() {
+function Publish(props: RouteComponentProps) {
   const { handleSubmit, control, watch } = useForm()
-  const [code, setCode] = useState('')
+  const [text, setText] = useState('')
 
   const watchEncrypt = watch('encrypt', false)
 
-  useEffect(() => {
-    console.log(watchEncrypt)
-  }, [watchEncrypt])
+  const onSubmit = async (data: ISubmitData) => {
+    console.debug(data)
 
-  const onSubmit = async (data: IPublicData) => {
-    console.log(data)
-    // return
     const formData = new FormData()
-    formData.append('author', data.author)
-    // @ts-ignore
-    formData.append('public', data.public)
-    formData.append('filename', data.filename ?? 'plain.txt')
 
-    let blob = new Blob([code], { type: 'text/plain' })
-    // encrypt
-    if (data.password) {
-      const enc = new TextEncoder()
-      const iv = crypto.getRandomValues(new Uint8Array(16))
-      try {
-        const key = await crypto.subtle.importKey('raw', enc.encode(data.password), 'AES-GCM', false, [
-          'encrypt',
-          'decrypt',
-        ])
-        const encryptedCode: Uint8Array = await crypto.subtle.encrypt(
-          {
-            name: 'AES-GCM',
-            iv: iv,
-          },
-          key,
-          enc.encode(code)
-        )
-        blob = new Blob([encryptedCode], { type: 'text/plain' })
-      } catch (error) {
-        alert('encrypt err')
-      }
+    if (data.author !== '') {
+      formData.append('author', data.author)
     }
-    formData.append('file', blob)
-    try {
-      const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
-        method: 'POST',
-        body: formData,
-        mode: 'cors',
-      })
-      const result = await resp.json()
-      console.log(result)
-    } catch (error) {
-      alert('post err')
+    // formData.append('public', data.isPublic)
+    const filename = data.filename === '' ? 'plain.txt' : data.filename
+
+    let content: Uint8Array | string
+    if (data.encrypt) {
+      content = await aesEncrypt(data.password, text)
+    } else {
+      content = text
+    }
+    const blob = new Blob([content], { type: 'text/plain' })
+    formData.append('file', blob, filename)
+
+    const resp = await fetch(import.meta.env.VITE_API_URL + '/api/v0/upload', {
+      method: 'POST',
+      body: formData,
+      mode: 'cors',
+    })
+    if (resp.status === 201) {
+      const cid = await resp.json()
+      window.location.href = `/` + cid
     }
   }
 
   return (
     <Container maxWidth="md">
-      <div tw="fixed right-[60px] bottom-[60px]">
+      {/* <div tw="fixed right-[60px] bottom-[60px]">
         <Fab color="primary" aria-label="add">
           <AddIcon />
         </Fab>
-      </div>
+      </div> */}
       <Paper>
         <div tw="flex m-6 ml-16 pt-4 pb-6 w-full">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div tw="w-[300px]">
               <Controller
-                // TODO find code language by file suffix, eg: "a.md, b.js, c.yaml"
                 name="filename"
                 control={control}
                 defaultValue=""
-                rules={{ required: true }}
-                render={({ field }) => <TextField fullWidth label="File name" {...field} />}
+                render={({ field }) => <TextField fullWidth label="Filename" {...field} />}
               />
-              {/* {errors.filename && <span>This field is required</span>} */}
             </div>
-            <div tw="my-4 min-w-[800px]">
+            <div tw="my-4 min-w-[800px] max-w-[800px]">
               <Paper variant="outlined">
                 <Editor
-                  value={code}
-                  onValueChange={(code) => setCode(code)}
-                  // TODO support more languages
-                  highlight={(code) => highlight(code, languages.markup, 'markup')}
+                  value={text}
+                  onValueChange={(text) => setText(text)}
+                  highlight={(text) => highlight(text, languages.markup, 'markup')}
                   padding={14}
                   tabSize={4}
                   insertSpaces={true}
@@ -114,6 +93,7 @@ function Publish() {
                     minHeight: '400px',
                     fontFamily: '"Fira code", "Fira Mono", monospace',
                     fontSize: 13,
+                    overflow: 'scroll',
                   }}
                 />
               </Paper>
@@ -126,15 +106,15 @@ function Publish() {
                 render={({ field }) => <TextField fullWidth label="Author" {...field} />}
               />
             </div>
-            <div>
+            {/* <div>
               <Controller
-                name="public"
+                name="isPublic"
                 control={control}
                 defaultValue={true}
                 render={({ field }) => <Switch {...field} />}
               />
               Show on gallery
-            </div>
+            </div> */}
             <div>
               <Controller
                 name="encrypt"
@@ -154,7 +134,6 @@ function Publish() {
                 />
               </div>
             )}
-            {/* TODO add more files by repeat "<Paper>" component */}
             <div tw="mt-6">
               <Button type="submit" color="primary" variant="contained">
                 Publish

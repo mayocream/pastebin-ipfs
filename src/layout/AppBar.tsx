@@ -58,7 +58,7 @@ function MenuAppBar() {
         </Toolbar>
         <Drawer anchor="left" open={isDrawerVisible} onClose={() => setIsDrawVisible(false)}>
           <List>
-            {['Publish', 'Gallery', 'View'].map((text, index) => (
+            {['Publish', 'Gallery'].map((text, index) => (
               <ListItem
                 button
                 key={text}

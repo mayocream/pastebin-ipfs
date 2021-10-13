@@ -30,6 +30,7 @@ type Server struct {
 	idx *index.Index
 }
 
+// New ...
 func New(conf *Config) *Server {
 	return &Server{
 		ipc: conf.IPFSClient,
@@ -44,6 +45,7 @@ func (s *Server) Start(addr string) {
 	})
 
 	// register middlewares
+    // middleware order matters!
 	app.Use(recover.New())
 	app.Use(etag.New())
 	app.Use(cors.New())
