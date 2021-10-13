@@ -12,7 +12,7 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core'
-import { Inbox, Mail, Menu } from '@material-ui/icons'
+import { Inbox, Mail, Menu, GitHub } from '@material-ui/icons'
 
 import React from 'react'
 import { navigate } from '@reach/router'
@@ -55,6 +55,12 @@ function MenuAppBar() {
           <Typography variant="h6" className={classes.title}>
             Pastebin/IO
           </Typography>
+          <IconButton
+            color="inherit"
+            href="https://github.com/mayocream/pastebin-ipfs"
+          >
+            <GitHub />
+          </IconButton>
         </Toolbar>
         <Drawer anchor="left" open={isDrawerVisible} onClose={() => setIsDrawVisible(false)}>
           <List>

@@ -4,6 +4,7 @@ import { Publish } from './pages/Publish'
 import { View } from './pages/View'
 import { Gallery } from './pages/Gallery'
 import { Router, RouteComponentProps } from '@reach/router'
+import 'twin.macro'
 
 function Sections() {
   return (
@@ -21,7 +22,12 @@ function App() {
   return (
     <>
       <MenuAppBar />
-      <Sections />
+      <div tw='min-h-[80vh]'>
+        <Sections />
+      </div>
+      <aside tw='mt-5 text-center'>
+        <span tw='italic'>©2021 Shoujo/IO, <a href="https://github.com/mayocream/pastebin-ipfs/issues">Feedback</a></span>
+      </aside>
     </>
   )
 }
