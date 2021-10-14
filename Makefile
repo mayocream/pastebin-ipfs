@@ -1,7 +1,7 @@
 all: build build-web
 
 build:
-	go build -o bin/pstbin cmd/main.go
+	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pstbin cmd/main.go
 
 compose:
 	sudo docker-compose up -d
