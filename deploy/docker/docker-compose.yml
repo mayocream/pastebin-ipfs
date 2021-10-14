@@ -14,6 +14,7 @@ services:
   pstbin:
     container_name: pstbin
     image: mayocream/pastebin-ipfs:latest
+    command: ["pstbin", "-ipfs", "ipfs:5001"]
     ports:
     - "80:3939"
     
