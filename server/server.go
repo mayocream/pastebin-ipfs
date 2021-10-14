@@ -56,6 +56,12 @@ func (s *Server) Start(addr string) {
 	}
 	app.Use(limiter.New(limiter.Config{
 		Max: 20,
+        KeyGenerator: func(c *fiber.Ctx) string {
+            if ip := c.GetRespHeader("CF-Connecting-IP"); ip != "" {
+                return ip
+            }
+            return c.IP()
+        },
 	}))
 
 	s.registerRoutes(app)
