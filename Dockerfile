@@ -8,6 +8,7 @@ FROM node:lts-buster AS node
 
 WORKDIR /data
 ADD . .
+RUN npm install
 RUN npm run build
 
 FROM alpine
