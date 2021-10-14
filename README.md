@@ -1,6 +1,7 @@
 # pastebin-ipfs
 ![go](https://github.com/mayocream/pastebin-ipfs/actions/workflows/go.yml/badge.svg)
 ![node](https://github.com/mayocream/pastebin-ipfs/actions/workflows/node.yml/badge.svg)
+![docker](https://github.com/mayocream/pastebin-ipfs/actions/workflows/docker.yml/badge.svg)
 
 Pastebin built on IPFS, securely served by Distributed Web and Edge Network.
 
