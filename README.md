@@ -66,7 +66,7 @@ Edit [deploy/docker/docker-compose.yml](https://github.com/mayocream/pastebin-ip
 docker-compose up -d
 ```
 
-## Develop
+## Development
 
 ```bash
 make run # start ipfs daemon at http://127.0.0.1:5001
