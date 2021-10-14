@@ -20,4 +20,6 @@ jobs:
           script: |
             cd pastebin-ipfs
             git pull
-            docker-compose -f deploy/docker/docker-compose.yml up -d
+            cd deploy/docker
+            docker-compose pull   
+            docker-compose up -d
