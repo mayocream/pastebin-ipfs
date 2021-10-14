@@ -38,7 +38,7 @@ func main() {
 	}
 
 	if conf.IPFSClient.Ping() != nil {
-		log.Panic("ipfs unavailble")
+		log.Fatalf("ipfs unavailble: %s", err)
 	}
 
 	srv := server.New(conf)
