@@ -46,12 +46,30 @@ Cat snippets:
 curl https://paste.shoujo.io/QmTnhJH8azDsudkxgp8wNLEN5Zq86NAE6DAkzwGBDpaQ6Z/raw/plain.txt
 ```
 
+## Self-Hosted
+
+### Docker
+
+You must have ipfs-daemon running on your host first.
+
+```bash
+docker run -p 8080:3939 pastebin-ipfs:latest
+```
+
+### Docker Compose
+
+Edit [docker-compose.yml](https://github.com/mayocream/pastebin-ipfs/blob/main/deploy/docker/docker-compose.yml) file.
+
+```bash
+docker-compose up -d
+```
+
 ## Develop
 
 ```bash
-make compose # start ipfs daemon at http://127.0.0.1:5001
-make run # run pastebin API at http://127.0.0.1:3939
-npm run dev # run Webpage
+make run # start ipfs daemon at http://127.0.0.1:5001
+         # run pastebin API at http://127.0.0.1:3939
+make web-live # run Webpage
 ```
 
 ## QA
