@@ -6,8 +6,8 @@ on:
       - v*
       
 jobs:
-  build:
-    name: Build
+  deploy:
+    name: deploy
     runs-on: ubuntu-latest
     steps:
       - name: multiple command
@@ -18,5 +18,6 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_SSH_PORT }}
           script: |
-            whoami
-            ls -al
+            cd pastebin-ipfs
+            git pull
+            docker-compose -f deploy/docker/docker-compose.yml up -d
