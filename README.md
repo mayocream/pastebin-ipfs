@@ -74,7 +74,7 @@ make run # start ipfs daemon at http://127.0.0.1:5001
 make web-live # run Webpage
 ```
 
-## QA
+## Feedback
 
 You can provide suggestion or ask question by open a Github Issue in any languages. 🧐
 
