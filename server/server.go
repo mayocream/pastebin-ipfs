@@ -7,10 +7,8 @@ import (
 	"os/signal"
 
 	"github.com/gofiber/fiber/v2"
-	// "github.com/gofiber/fiber/v2/middleware/cache"
-	// "github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	// "github.com/gofiber/fiber/v2/middleware/etag"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
@@ -47,10 +45,8 @@ func (s *Server) Start(addr string) {
 	// register middlewares
     // middleware order matters!
 	app.Use(recover.New())
-	// app.Use(etag.New())
+	app.Use(etag.New())
 	app.Use(cors.New())
-	// app.Use(compress.New())
-	// app.Use(cache.New())
 	limiter.ConfigDefault.Next = func(c *fiber.Ctx) bool {
 		return c.IP() == "127.0.0.1"
 	}
@@ -63,6 +59,16 @@ func (s *Server) Start(addr string) {
             return c.IP()
         },
 	}))
+    app.Use(func(c *fiber.Ctx) error {
+        if c.Method() != fiber.MethodGet {
+            return c.Next()
+        }
+        if err := c.Next(); err != nil {
+			return err
+		}
+        c.Set(fiber.HeaderCacheControl, "public, max-age=604800")
+        return nil
+    })
 
 	s.registerRoutes(app)
 
