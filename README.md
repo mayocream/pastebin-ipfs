@@ -11,8 +11,10 @@ Alternative to [Ubuntu Pastebin](https://paste.ubuntu.com/).
 
 [paste.shoujo.io](https://paste.shoujo.io)
 
-<img width="500px" src="./docs/images/index.png" />
-<img width="500px" src="./docs/images/view.png" />
+<table>
+  <td><img width="500px" src="./docs/images/index.png" /></td>
+  <td><img width="500px" src="./docs/images/view.png" /></td>
+</table>
          
 ## Features
 
