@@ -93,8 +93,8 @@ func (s *Server) registerRoutes(app *fiber.App) {
     v0.Post("/", s.handlePut)
     v0.Put("/:name", s.handlePut)
     
-	app.Post("/", s.handlePut)
-	app.Put("/:name", s.handlePut)
+	// app.Post("/", s.handlePut)
+	// app.Put("/:name", s.handlePut)
 
 	app.Get("/:cid/raw/:file", s.handleCat)
 
