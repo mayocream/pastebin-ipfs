@@ -61,6 +61,26 @@ curl https://paste.shoujo.io/api/v0/QmTnhJH8azDsudkxgp8wNLEN5Zq86NAE6DAkzwGBDpaQ
 
 ## Self-Hosted
 
+### Kubernetes
+
+Deploy pastebin-ipfs with [Helm](https://helm.sh/).
+
+```bash
+git clone https://github.com/mayocream/pastebin-ipfs
+cd pastebin-ipfs/helm
+helm install pastebin-ipfs .
+```
+
+Refer [values.yaml](./helm/values.yaml) for more detail.
+
+### Docker Compose
+
+Edit [deploy/docker/docker-compose.yml](https://github.com/mayocream/pastebin-ipfs/blob/main/deploy/docker/docker-compose.yml) file.
+
+```bash
+docker-compose up -d
+```
+
 ### Docker
 
 You must have ipfs-daemon running on your host first.
@@ -69,14 +89,6 @@ Check out IPFS [docker-compose.yml](https://github.com/mayocream/pastebin-ipfs/b
 
 ```bash
 docker run -p 8080:3939 pastebin-ipfs:latest
-```
-
-### Docker Compose
-
-Edit [deploy/docker/docker-compose.yml](https://github.com/mayocream/pastebin-ipfs/blob/main/deploy/docker/docker-compose.yml) file.
-
-```bash
-docker-compose up -d
 ```
 
 ## Development
