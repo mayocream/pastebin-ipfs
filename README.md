@@ -7,9 +7,13 @@
 Pastebin built on IPFS, securely served by Distributed Web and Edge Network.
 
 It's like [gist](https://gist.github.com/) but for anonymous.
+Alternative to [Ubuntu Pastebin](https://paste.ubuntu.com/).
 
-[Preview](https://paste.shoujo.io)
+[paste.shoujo.io](https://paste.shoujo.io)
 
+<img width="500px" src="./docs/images/index.png" />
+<img width="500px" src="./docs/images/view.png" />
+         
 ## Features
 
 <!-- - [Gallery](https://paste.shoujo.io/gallery) shows *Public* snippets -->
