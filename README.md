@@ -29,6 +29,12 @@ Webpage serves [Gallery](https://paste.shoujo.io/gallery) and provide GUI to pas
 
 Vist [Webpage](https://paste.shoujo.io).
 
+### API
+
+**API Docs**: [*OpenAPI v3 - Swagger UI*](https://mayocream.github.io/pastebin-ipfs/api/)    
+
+Pastebin it has a rate limit at 20 qps.  
+
 ### Terminal
 
 Create snippets:
