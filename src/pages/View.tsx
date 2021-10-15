@@ -5,8 +5,6 @@ import { Match, navigate, RouteComponentProps } from '@reach/router'
 import dayjs from 'dayjs'
 import { CidResource } from '@/types'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import Prism from 'prismjs'
-import loadLanguages from 'prismjs/components/index'
 import { findFileLanguage } from '@/util/fileTypes'
 import '@/css/prism-nord.css'
 
@@ -44,11 +42,11 @@ function View(props: RouteComponentProps<ViewProps>) {
 
       const lang = findFileLanguage(data.objects[0].name)
       setLangCode(lang)
-      // loadLanguages([lang])
 
       getFile(cid, data.objects[0].name)
         .then((txt) => setText(txt))
         .then(() => {
+          // @ts-ignore
           Prism.highlightAll()
         })
     })
