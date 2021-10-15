@@ -25,7 +25,7 @@ function App() {
       <div tw='min-h-[80vh]'>
         <Sections />
       </div>
-      <aside tw='my-5 text-center'>
+      <aside tw='my-5 text-center invisible'>
         <span tw='italic'>©2021 Shoujo/IO, <a href="https://github.com/mayocream/pastebin-ipfs/issues">Feedback</a></span>
       </aside>
     </>
