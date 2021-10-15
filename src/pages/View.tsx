@@ -1,5 +1,5 @@
 import 'twin.macro'
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Avatar, Chip, Container, TextField, Paper, Button } from '@material-ui/core'
 import { Match, navigate, RouteComponentProps } from '@reach/router'
 import dayjs from 'dayjs'
@@ -28,6 +28,34 @@ async function getFile(cid: string, filename: string): Promise<string> {
     console.log(res.text)
     return res.text()
   })
+}
+
+function renderContent(lang: string, text: string): ReactNode {
+  if (lang !== 'md') {
+    return (
+      <Paper tw="mt-2 rounded-[10px]">
+        <pre tw="rounded-[10px]">
+          <code tw="text-[0.8125rem]" className={`language-${lang}`}>
+            {text}
+          </code>
+        </pre>
+      </Paper>
+    )
+  }
+
+  // @ts-ignore
+  const result: any = markdownit({
+    html: true,
+    langPrefix: 'language-',
+    linkify: true,
+  }).render(text)
+  return (
+    <div
+      dangerouslySetInnerHTML={{
+        __html: result,
+      }}
+    ></div>
+  )
 }
 
 function View(props: RouteComponentProps<ViewProps>) {
@@ -62,20 +90,18 @@ function View(props: RouteComponentProps<ViewProps>) {
             label={metadata?.author}
             variant="outlined"
           />
-          <Button tw='ml-[auto]' size="small" variant="outlined" color="secondary" href={import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`}>
+          <Button
+            tw="ml-[auto]"
+            size="small"
+            variant="outlined"
+            color="secondary"
+            href={import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`}
+          >
             Raw
           </Button>
         </section>
         <time tw="italic">Created {dayjs().to(dayjs(metadata?.created_at))}</time>
-        <Paper tw="mt-2 rounded-[10px]">
-          <section>
-            <pre tw="rounded-[10px]">
-              <code tw="text-[0.8125rem]" className={`language-${langCode}`}>
-                {text}
-              </code>
-            </pre>
-          </section>
-        </Paper>
+        <section>{renderContent(langCode, text)}</section>
       </article>
     </Container>
   )
