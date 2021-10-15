@@ -8,6 +8,7 @@ services:
     - "5001:5001" # internal API
     - "4001:4001" # expose to public
     - "8088:8080" # web gateway
+    restart: always
 
   pstbin:
     container_name: pstbin
@@ -17,4 +18,4 @@ services:
     - "./.pastebin:/data/.pastebin"
     ports:
     - "80:3939"
-    
+    restart: always
