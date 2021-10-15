@@ -1,0 +1,27 @@
+replicas: 2
+
+image:
+  repository: mayocream/pastebin-ipfs
+  tag: latest
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 50Mi
+  limits:
+    cpu: 1
+    memory: 2G
+
+command:
+  - pstbin
+  - -ipfs
+  - 127.0.0.1:5001
+
+ingress:
+  host: paste.yourcomany.com
+  secretName: pastebin-ipfs-host
+  annotations:
+    # cert-manager.io/cluster-issuer: default
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
