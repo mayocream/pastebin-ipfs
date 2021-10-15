@@ -136,15 +136,15 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	ok, err := s.idx.Exist(cid)
-	if err != nil {
-		zap.S().Errorf("idx get err: %s", err)
-		return err
-	}
+	// ok, err := s.idx.Exist(cid)
+	// if err != nil {
+	// 	zap.S().Errorf("idx get err: %s", err)
+	// 	return err
+	// }
 
-	if !ok {
-		return fiber.ErrBadRequest
-	}
+	// if !ok {
+	// 	return fiber.ErrBadRequest
+	// }
 
     path := filepath.Join(cid, c.Params("file"))
 	src, err := s.ipc.CatStream(path)

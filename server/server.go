@@ -99,4 +99,7 @@ func (s *Server) registerRoutes(app *fiber.App) {
 	app.Get("/:cid/raw/:file", s.handleCat)
 
     app.Static("/", "./dist")
+    app.Get("/*", func(c *fiber.Ctx) error {
+        return c.SendFile("./dist/index.html")
+    })
 }
