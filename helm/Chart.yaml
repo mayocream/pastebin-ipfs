@@ -1,0 +1,10 @@
+apiVersion: v1
+description: Pastebin IPFS
+kubeVersion: '>=1.16.0-0'
+maintainers:
+  - name: Mayo Cream
+    email: i@shoujo.io
+name: pastebin-ipfs
+sources:
+- https://github.com/mayocream/pastebin-ipfs
+version: 0.1
