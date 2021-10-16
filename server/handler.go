@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"time"
@@ -95,6 +96,12 @@ func (s *Server) handlePut(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
+    var err error
+    fn, err = url.QueryUnescape(fn)
+    if err != nil {
+        return err
+    }
+
 	body := c.Body()
 	if len(body) == 0 {
 		return fiber.ErrBadRequest
@@ -146,7 +153,12 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 	// 	return fiber.ErrBadRequest
 	// }
 
-    path := filepath.Join(cid, c.Params("file"))
+    filename, err := url.QueryUnescape(c.Params("file"))
+    if err != nil {
+        return err
+    }
+
+    path := filepath.Join(cid, filename)
 	src, err := s.ipc.CatStream(path)
 	if err != nil {
 		zap.S().Errorf("ipfs cat err: %s", err)
