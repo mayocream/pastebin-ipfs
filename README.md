@@ -33,6 +33,7 @@ Alternative to [Ubuntu Pastebin](https://paste.ubuntu.com/).
 - File upload (API Only)
 - Cache by CDN (or [IPFS Gateway](https://cloudflare-ipfs.com))
 - Syntax highlight by [Prismjs](https://github.com/PrismJS/prism)
+- Markdown Preview
 - No Expiration
 
 ## Usage

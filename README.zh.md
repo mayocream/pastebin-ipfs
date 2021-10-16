@@ -27,10 +27,11 @@
 <!-- - [Gallery](https://paste.shoujo.io/gallery) shows *Public* snippets -->
 - 数据由 [IPFS](https://ipfs.io/) 去中心化储存
 - *AES-GCM* 加密
-- 开发 API（OpenAPI v3，跨域 CORS `*`）
+- 开放 API（OpenAPI v3，跨域 CORS `*`）
 - 文件上传（仅限 API）
 - CDN 缓存（或 [IPFS 网关](https://cloudflare-ipfs.com)）
 - [Prismjs](https://github.com/PrismJS/prism) 语法高亮
+- Markdown 预览
 - 无过期时间（受限于 IPFS）
 
 ## 使用
