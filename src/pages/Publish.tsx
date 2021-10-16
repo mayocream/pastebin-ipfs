@@ -69,14 +69,14 @@ function Publish(props: RouteComponentProps) {
         </Fab>
       </div> */}
       <Paper>
-        <div tw="flex m-6 ml-16 pt-4 pb-6 w-full">
+        <div tw="flex m-6 pt-4 pb-6 w-full">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div tw="w-[300px]">
               <Controller
                 name="filename"
                 control={control}
                 defaultValue=""
-                render={({ field }) => <TextField fullWidth label="Filename" {...field} />}
+                render={({ field }) => <TextField size="small" fullWidth label="Filename" {...field} />}
               />
             </div>
             <div tw="my-4 min-w-[800px] max-w-[800px]">
@@ -94,7 +94,7 @@ function Publish(props: RouteComponentProps) {
                     minHeight: '400px',
                     fontFamily: '"Fira code", "Fira Mono", monospace',
                     fontSize: 13,
-                    overflow: 'scroll',
+                    overflow: 'auto',
                   }}
                 />
               </Paper>
@@ -104,7 +104,7 @@ function Publish(props: RouteComponentProps) {
                 name="author"
                 control={control}
                 defaultValue=""
-                render={({ field }) => <TextField fullWidth label="Author" {...field} />}
+                render={({ field }) => <TextField size="small" fullWidth label="Author" {...field} />}
               />
             </div>
             {/* <div>
@@ -131,7 +131,7 @@ function Publish(props: RouteComponentProps) {
                   name="password"
                   control={control}
                   defaultValue=""
-                  render={({ field }) => <TextField fullWidth label="Password" {...field} />}
+                  render={({ field }) => <TextField size="small" fullWidth label="Password" {...field} />}
                 />
               </div>
             )}
