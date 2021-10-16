@@ -4,6 +4,12 @@
 ![docker](https://github.com/mayocream/pastebin-ipfs/actions/workflows/docker.yml/badge.svg)
 ![deploy](https://github.com/mayocream/pastebin-ipfs/actions/workflows/deploy.yml/badge.svg)
 
+<img width="200px" src="./docs/images/ipfs-archivists.svg" />
+
+<small>_(IPFS Archivists)_</small>    
+
+*Still in development, Pull Requests are welcomed.*
+
 Pastebin built on IPFS, securely served by Distributed Web and Edge Network.
 
 It's like [gist](https://gist.github.com/) but for anonymous.
@@ -106,6 +112,10 @@ You can provide suggestion or ask question by open a Github Issue in any languag
 ## Todo
 
 - [ ] replace ipfs daemon with [ipfs-lite](github.com/hsanjuan/ipfs-lite).
+
+## Credits
+
+- [Web Crypto Encryption and Decryption Example](https://github.com/bradyjoslin/webcrypto-example)
 
 ## LICENSE
 
