@@ -125,7 +125,7 @@ function View(props: RouteComponentProps<ViewProps>) {
             download={metadata?.objects[0].name}
             href={
               revealText !== ''
-                ? `data:text/plain;base64,${btoa(revealText)}`
+                ? `data:text/plain;base64,${btoa(unescape(encodeURIComponent(revealText)))}`
                 : import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`
             }
           >
