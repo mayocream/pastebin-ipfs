@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Button, Fab, Switch, TextField } from '@mui/material'
 import { Container, Paper } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
-import { highlight, languages } from 'prismjs'
+// import { highlight, languages } from 'prismjs'
 
 import 'twin.macro'
-import 'prismjs/components/prism-clike'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-markup'
-import 'prismjs/components/prism-css'
+// import 'prismjs/components/prism-clike'
+// import 'prismjs/components/prism-javascript'
+// import 'prismjs/components/prism-markup'
+// import 'prismjs/components/prism-css'
 
 import AddIcon from '@mui/icons-material/Add'
 import Editor from 'react-simple-code-editor'
@@ -81,10 +81,12 @@ function Publish(props: RouteComponentProps) {
             </div>
             <div tw="my-4 min-w-[800px] max-w-[800px]">
               <Paper variant="outlined">
+                {/* TODO replace editor with multiline textarea input */}
                 <Editor
                   value={text}
                   onValueChange={(text) => setText(text)}
-                  highlight={(text) => highlight(text, languages.markup, 'markup')}
+                  highlight={(text) => text}
+                  // highlight={(text) => highlight(text, languages.markup, 'markup')}
                   padding={14}
                   tabSize={4}
                   insertSpaces={true}
