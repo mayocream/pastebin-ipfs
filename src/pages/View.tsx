@@ -1,12 +1,14 @@
 import 'twin.macro'
 import { ReactNode, useEffect, useState } from 'react'
-import { Avatar, Chip, Container, TextField, Paper, Button } from '@material-ui/core'
+import { Avatar, Chip, Container, TextField, Paper, Button } from '@mui/material'
 import { Match, navigate, RouteComponentProps } from '@reach/router'
 import dayjs from 'dayjs'
 import { CidResource } from '@/types'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { findFileLanguage } from '@/util/fileTypes'
 import '@/css/prism-nord.css'
+import { decryptData } from '@/util/crypt'
+import { useSnackbar } from 'notistack'
 
 dayjs.extend(relativeTime)
 
@@ -33,7 +35,7 @@ async function getFile(cid: string, filename: string): Promise<string> {
 function renderContent(lang: string, text: string): ReactNode {
   if (lang !== 'md') {
     return (
-      <Paper tw="mt-2 rounded-[10px]">
+      <Paper tw="mt-4 rounded-[10px]">
         <pre tw="rounded-[10px]">
           <code tw="text-[0.8125rem]" className={`language-${lang}`}>
             {text}
@@ -63,6 +65,14 @@ function View(props: RouteComponentProps<ViewProps>) {
   const [metadata, setMetadata] = useState<CidResource>()
   const [langCode, setLangCode] = useState('plain')
   const [text, setText] = useState('')
+  const [password, setPassword] = useState('')
+  const [revealText, setRevealText] = useState(localStorage.getItem(`reveal-${cid}`) || '')
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  const highlight = () => {
+    // @ts-ignore
+    Prism.highlightAll()
+  }
 
   useEffect(() => {
     getMetadata(cid).then((data) => {
@@ -74,11 +84,22 @@ function View(props: RouteComponentProps<ViewProps>) {
       getFile(cid, data.objects[0].name)
         .then((txt) => setText(txt))
         .then(() => {
-          // @ts-ignore
-          Prism.highlightAll()
+          highlight()
         })
     })
   }, [])
+
+  const decrypt = async () => {
+    if (password === '') return
+    const data = await decryptData(text, password)
+    if (data === '') {
+      enqueueSnackbar('Password incorrect', { variant: 'error' })
+      return
+    }
+    localStorage.setItem(`reveal-${cid}`, data)
+    setRevealText(data)
+    highlight()
+  }
 
   return (
     <Container tw="pt-[60px]" maxWidth="md">
@@ -90,18 +111,49 @@ function View(props: RouteComponentProps<ViewProps>) {
             label={metadata?.author}
             variant="outlined"
           />
+          {metadata?.encrypt_algorithm !== 'none' && (
+            <Chip
+              tw="ml-2"
+              label={`${revealText === '' ? 'Encrypted' : 'Decrypted'} (${metadata?.encrypt_algorithm.toUpperCase()})`}
+            />
+          )}
           <Button
             tw="ml-[auto]"
             size="small"
             variant="outlined"
             color="secondary"
-            href={import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`}
+            download={metadata?.objects[0].name}
+            href={
+              revealText !== ''
+                ? `data:text/plain;base64,${btoa(revealText)}`
+                : import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`
+            }
           >
             Raw
           </Button>
         </section>
         <time tw="italic">Created {dayjs().to(dayjs(metadata?.created_at))}</time>
-        <section>{renderContent(langCode, text)}</section>
+        <section>
+          {metadata?.encrypt_algorithm !== 'none' && revealText === '' ? (
+            <div tw="my-10 max-w-[300px]">
+              <TextField
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                size="small"
+                required
+                id="password"
+                type="password"
+                label="Password"
+                variant="outlined"
+              />
+              <Button onClick={decrypt} tw="mt-6" variant="contained" color="primary">
+                Confirm
+              </Button>
+            </div>
+          ) : (
+            renderContent(langCode, revealText !== '' ? revealText : text)
+          )}
+        </section>
       </article>
     </Container>
   )

@@ -10,9 +10,9 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  makeStyles,
-} from '@material-ui/core'
-import { Inbox, Mail, Menu, GitHub } from '@material-ui/icons'
+} from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { Inbox, Mail, Menu, GitHub } from '@mui/icons-material'
 
 import React from 'react'
 import { navigate } from '@reach/router'
@@ -21,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
   title: {
     flexGrow: 1,
   },
@@ -31,13 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuAppBar() {
   const classes = useStyles()
-  // const [auth, setAuth] = React.useState(true)
-  // const [anchorEl, setAnchorEl] = React.useState(null)
   const [isDrawerVisible, setIsDrawVisible] = React.useState(false)
-
-  // const handleChange = (event) => {
-  //   setAuth(event.target.checked)
-  // }
 
   return (
     <div className={classes.root}>
@@ -45,7 +36,6 @@ function MenuAppBar() {
         <Toolbar>
           <IconButton
             edge="start"
-            className={classes.menuButton}
             color="inherit"
             aria-label="menu"
             onClick={() => setIsDrawVisible(true)}
@@ -55,10 +45,7 @@ function MenuAppBar() {
           <Typography variant="h6" className={classes.title}>
             Pastebin/IO
           </Typography>
-          <IconButton
-            color="inherit"
-            href="https://github.com/mayocream/pastebin-ipfs"
-          >
+          <IconButton color="inherit" href="https://github.com/mayocream/pastebin-ipfs">
             <GitHub />
           </IconButton>
         </Toolbar>
