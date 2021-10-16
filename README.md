@@ -96,7 +96,7 @@ You must have ipfs-daemon running on your host first.
 Check out IPFS [docker-compose.yml](https://github.com/mayocream/pastebin-ipfs/blob/main/docker-compose.yml).
 
 ```bash
-docker run -p 8080:3939 pastebin-ipfs:latest
+docker run -p 8080:3939 mayocream/pastebin-ipfs:latest
 ```
 
 ## Development
