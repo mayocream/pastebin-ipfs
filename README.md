@@ -107,6 +107,10 @@ You can provide suggestion or ask question by open a Github Issue in any languag
 
 - [ ] replace ipfs daemon with [ipfs-lite](github.com/hsanjuan/ipfs-lite).
 
+## Credits
+
+- [Web Crypto Encryption and Decryption Example](https://github.com/bradyjoslin/webcrypto-example)
+
 ## LICENSE
 
 MIT

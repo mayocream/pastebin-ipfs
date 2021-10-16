@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Fab, Switch, TextField } from '@material-ui/core'
-import { Container, Paper } from '@material-ui/core'
+import { Button, Fab, Switch, TextField } from '@mui/material'
+import { Container, Paper } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { highlight, languages } from 'prismjs'
 
@@ -10,9 +10,9 @@ import 'prismjs/components/prism-javascript'
 import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-css'
 
-import AddIcon from '@material-ui/icons/Add'
+import AddIcon from '@mui/icons-material/Add'
 import Editor from 'react-simple-code-editor'
-import { aesEncrypt } from '@/util/crypt'
+import { encryptData } from '@/util/crypt'
 import { RouteComponentProps } from '@reach/router'
 
 interface ISubmitData {
@@ -42,7 +42,8 @@ function Publish(props: RouteComponentProps) {
 
     let content: Uint8Array | string
     if (data.encrypt) {
-      content = await aesEncrypt(data.password, text)
+      content = await encryptData(text, data.password)
+      formData.append('encrypt_algorithm', 'aes-gcm')
     } else {
       content = text
     }
