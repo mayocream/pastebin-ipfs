@@ -19,14 +19,14 @@ interface ViewProps {
 }
 
 async function getMetadata(cid: string): Promise<CidResource> {
-  return await fetch(import.meta.env.VITE_API_URL + `/api/v0/${cid}/__metadata.json`).then((res) => {
+  return await fetch(import.meta.env.VITE_API_URL + `/ipfs/${cid}/__metadata.json`).then((res) => {
     console.log(res.json)
     return res.json() as Promise<CidResource>
   })
 }
 
 async function getFile(cid: string, filename: string): Promise<string> {
-  return await fetch(import.meta.env.VITE_API_URL + `/api/v0/${cid}/${filename}`).then((res) => {
+  return await fetch(import.meta.env.VITE_API_URL + `/ipfs/${cid}/${filename}`).then((res) => {
     console.log(res.text)
     return res.text()
   })
@@ -126,7 +126,7 @@ function View(props: RouteComponentProps<ViewProps>) {
             href={
               revealText !== ''
                 ? `data:text/plain;base64,${btoa(unescape(encodeURIComponent(revealText)))}`
-                : import.meta.env.VITE_API_URL + `/api/v0/${cid}/${metadata?.objects[0].name}`
+                : import.meta.env.VITE_API_URL + `/ipfs/${cid}/${metadata?.objects[0].name}`
             }
           >
             Raw

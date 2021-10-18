@@ -92,18 +92,26 @@ func gracefulShutdown(ctx context.Context, app *fiber.App) {
 }
 
 func (s *Server) registerRoutes(app *fiber.App) {
-	v0 := app.Group("/api/v0")
+	// API Usage
+    v0 := app.Group("/api/v0")
 	v0.Post("/upload", s.handleUpload)
     v0.Get("/gallery", s.handleGallery)
     v0.Get("/:cid/:file", s.handleCat)
+
+    // Terminal Upload
     v0.Post("/", s.handlePut)
     v0.Put("/:name", s.handlePut)
     
+    // Root shorter upload url. 
 	// app.Post("/", s.handlePut)
 	// app.Put("/:name", s.handlePut)
 
 	app.Get("/:cid/raw/:file", s.handleCat)
 
+    // IPFS paths
+    app.Get("/ipfs/:cid/:file", s.handleCat)
+
+    // Static files or frontend
     app.Static("/", "./dist")
     app.Get("/*", func(c *fiber.Ctx) error {
         return c.SendFile("./dist/index.html")
