@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -63,11 +65,19 @@ func (s *Server) handleUpload(c *fiber.Ctx) error {
 			if err != nil {
 				return fiber.ErrBadRequest
 			}
+
+			size, _ := multipartFileSize(fr)
+			if size == 0 {
+				// fallback
+				size = f.Size
+			}
+
 			defer fr.Close()
 			blobs = append(blobs, &file{
 				Name:     f.Filename,
 				MIMEType: mediaTypeOrDefault(f.Header),
 				Reader:   fr,
+				Size:     size,
 			})
 		}
 	}
@@ -96,11 +106,11 @@ func (s *Server) handlePut(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-    var err error
-    fn, err = url.QueryUnescape(fn)
-    if err != nil {
-        return err
-    }
+	var err error
+	fn, err = url.QueryUnescape(fn)
+	if err != nil {
+		return err
+	}
 
 	body := c.Body()
 	if len(body) == 0 {
@@ -153,12 +163,12 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 	// 	return fiber.ErrBadRequest
 	// }
 
-    filename, err := url.QueryUnescape(c.Params("file"))
-    if err != nil {
-        return err
-    }
+	filename, err := url.QueryUnescape(c.Params("file"))
+	if err != nil {
+		return err
+	}
 
-    path := filepath.Join(cid, filename)
+	path := filepath.Join(cid, filename)
 	src, err := s.ipc.CatStream(path)
 	if err != nil {
 		zap.S().Errorf("ipfs cat err: %s", err)
@@ -167,4 +177,22 @@ func (s *Server) handleCat(c *fiber.Ctx) error {
 
 	c.SendStream(src)
 	return nil
+}
+
+// ref: https://medium.com/dtoebe/how-to-get-a-multipart-file-size-in-golang-3ab4ab4c3e3
+func multipartFileSize(fr multipart.File) (int64, error) {
+	switch t := fr.(type) {
+	case *os.File:
+		f, err := t.Stat()
+		if err != nil {
+			return 0, err
+		}
+		return f.Size(), nil
+	default:
+		sr, err := fr.Seek(0, 0)
+		if err != nil {
+			return 0, err
+		}
+		return sr, nil
+	}
 }
