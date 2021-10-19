@@ -112,6 +112,14 @@ make web-live # run Webpage
 
 You can provide suggestion or ask question by open a Github Issue in any languages. 🧐
 
+## Topic
+
+Discuss about this project!
+
+[Reddit - Pastebin built on IPFS, alternative to Ubuntu Pastebin](https://www.reddit.com/r/ipfs/comments/qaih8i/pastebin_built_on_ipfs_alternative_to_ubuntu/)  
+
+[V2EX - 我做了一个去中心化的 Pastebin， Ubuntu Pastebin 的替代品](https://v2ex.com/t/808227)
+
 ## Todo
 
 - [ ] replace ipfs daemon with [ipfs-lite](github.com/hsanjuan/ipfs-lite).
