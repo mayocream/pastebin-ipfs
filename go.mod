@@ -11,7 +11,7 @@ require (
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipfs/go-ipfs-api v0.2.0
 	github.com/ipfs/go-ipfs-files v0.0.8
-	github.com/multiformats/go-multihash v0.0.15
+	github.com/multiformats/go-multihash v0.0.16
 	github.com/spf13/cast v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/thoas/go-funk v0.9.1
