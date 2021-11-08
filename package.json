@@ -16,7 +16,7 @@
     "@sentry/react": "^6.14.0",
     "@sentry/tracing": "^6.14.0",
     "dayjs": "^1.10.7",
-    "framer-motion": "^5.2.0",
+    "framer-motion": "^5.2.1",
     "i18next": "^21.4.0",
     "notistack": "^2.0.3",
     "react": "^17.0.2",
