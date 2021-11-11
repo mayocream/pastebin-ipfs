@@ -35,7 +35,7 @@
     "tailwindcss": "^2.2.19",
     "twin.macro": "^2.8.1",
     "typescript": "^4.4.3",
-    "vite": "^2.6.13",
+    "vite": "^2.6.14",
     "vite-plugin-babel-macros": "^1.0.5"
   },
   "babelMacros": {
