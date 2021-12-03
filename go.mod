@@ -9,7 +9,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.22.0
 	github.com/google/uuid v1.3.0
 	github.com/ipfs/go-cid v0.1.0
-	github.com/ipfs/go-ipfs-api v0.2.0
+	github.com/ipfs/go-ipfs-api v0.3.0
 	github.com/ipfs/go-ipfs-files v0.0.9
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/spf13/cast v1.4.1
