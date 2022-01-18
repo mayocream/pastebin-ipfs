@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/ipfs/go-cid v0.1.0
 	github.com/ipfs/go-ipfs-api v0.3.0
-	github.com/ipfs/go-ipfs-files v0.0.9
+	github.com/ipfs/go-ipfs-files v0.1.0
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/spf13/cast v1.4.1
 	github.com/stretchr/testify v1.7.0
