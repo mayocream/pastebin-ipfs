@@ -17,5 +17,5 @@ require (
 	github.com/thoas/go-funk v0.9.1
 	github.com/tidwall/pretty v1.2.0
 	go.uber.org/atomic v1.9.0
-	go.uber.org/zap v1.20.0
+	go.uber.org/zap v1.21.0
 )
