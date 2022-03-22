@@ -22,7 +22,7 @@ jobs:
         node-version: 14.x
         
     - name: Cache pnpm modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.npm
         key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
