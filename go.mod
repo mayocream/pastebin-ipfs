@@ -14,7 +14,7 @@ require (
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/spf13/cast v1.4.1
 	github.com/stretchr/testify v1.7.0
-	github.com/thoas/go-funk v0.9.1
+	github.com/thoas/go-funk v0.9.3
 	github.com/tidwall/pretty v1.2.0
 	go.uber.org/atomic v1.9.0
 	go.uber.org/zap v1.21.0
